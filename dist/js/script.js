@@ -120,7 +120,7 @@ window.addEventListener('DOMContentLoaded', () => {
     modalCloseBtn.addEventListener('click', closeModal);
 
     modal.addEventListener('click', (event) => {
-        console.log(event.target);
+        // console.log(event.target);
         if (event.target === modal) {
             closeModal();
         }
@@ -214,77 +214,53 @@ window.addEventListener('DOMContentLoaded', () => {
         'big'
     ).render();
 
+    // Forms
+
+    const forms = document.querySelectorAll('form');
+    const message = {
+        loading: 'Загрузка...',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            let statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            const formData = new FormData(form);
+
+            // const object = {};
+            // formData.forEach(function(value, key){
+            //     object[key] = value;
+            // });
+            // const json = JSON.stringify(object);
+
+            // request.send(json);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = message.success;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                } else {
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
 });
-
-//Other
-
-function func1(a, b, c) {
-    console.log(arguments);
-    console.log(typeof arguments);
-
-    console.log(arguments[0]);
-    // expected output: 1
-
-    console.log(arguments[1]);
-    // expected output: 2
-
-    console.log(arguments[2]);
-    // expected output: 3
-
-    console.log(arguments[3]);
-    // expected output: 4
-
-    console.log('объекты arguments js итерируемые ===========================');
-    for (let value of arguments) {
-        console.log(value);
-    }
-    console.log('===========================');
-
-    const arr = Array.from(arguments);
-    console.log(arr);
-    console.log(typeof arr);
-
-}
-
-func1(1, 2, 3, 4, 'word', {
-    a: 'apple'
-}, ['dog', 'cat'], undefined, null, NaN, false);
-
-// Ввод: натуральное число n
-// Вывод: количество простых чисел строго меньше n
-
-const n = 101; // натуральное число n > 1
-let arrBoolean = [];
-for (let i = 2; i < n; i++) {
-    arrBoolean[i] = true;
-}
-
-for (let i = 2; i * i <= (n - 1); i++) {
-    if (arrBoolean[i] === true) {
-        for (let j = i * i; j <= (n - 1); j += i) {
-            arrBoolean[j] = false;
-        }
-    }
-}
-
-let count = 0;
-for (let i = 2; i < n; i++) {
-    if (arrBoolean[i]) {
-        count++;
-        console.log(`Простое число: ${i}`);
-    }
-}
-console.log(`ВЫВОД: количество простых чисел строго меньше натурального ${n}: ${count}`);
-
-// Вход: натуральное число n (n > 1).
-// Выход: все простые числа от 2 до n.
-
-// Пусть A — булевый массив, индексируемый числами от 2 до n, 
-// изначально заполненный значениями true.
-
-//  для i := 2, 3, 4, ..., пока i * i ≤ n:
-//   если A[i] = true:
-//     для j := i * i, i * i + i, i * i + 2i, ..., пока j ≤ n:
-//       A[j] := false
-
-//  возвращаем: все числа i, для которых A[i] = true.
